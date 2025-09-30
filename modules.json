@@ -1,0 +1,20 @@
+{
+  "name": "rescue_analysis",
+  "homePage": "null",
+  "repos": {
+    "https://github.com/nf-core/modules.git": {
+      "modules": {
+        "nf-core": {
+          "fastp": {
+            "branch": "master",
+            "git_sha": "d9ec4ef289ad39b8a662a7a12be50409b11df84b",
+            "installed_by": ["modules"]
+          }
+        }
+      },
+      "subworkflows": {
+        "nf-core": {}
+      }
+    }
+  }
+}
