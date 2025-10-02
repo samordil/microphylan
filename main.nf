@@ -4,8 +4,9 @@ nextflow.enable.dsl = 2
 
 // Import modules
 include { SAMPLESHEET_GENERATION    } from './modules/local/generate_samplesheet'
+include { KNEADDATA                 } from './modules/local/kneaddata' 
 include { FASTP                     } from './modules/nf-core/fastp/main'
-include { MULTIQC                   } from './modules/nf-core/multiqc/main' 
+include { MULTIQC                   } from './modules/nf-core/multiqc/main'
 
 
 workflow {
@@ -25,6 +26,11 @@ workflow {
         .fromPath(params.fastq_dir, type: 'dir', maxDepth: 1)
         .set { ch_fastq_data_dir }
 
+    // Define bowtie index human genome directory and make it a value channel
+    channel
+        .value(file(params.human_genome), type: 'dir', maxDepth: 1)
+        .set { ch_host_genome }
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     END OF DATA INPUT CHANNEL DEFINATIONS
@@ -37,10 +43,59 @@ workflow {
         ch_metadata
     )
 
+    // Prepare samplesheet for kneaddata tool
+    SAMPLESHEET_GENERATION.out.samplesheet
+        .splitCsv(header:true)
+        .map { row -> tuple( row.id, file(row.r1), file(row.r2)) }
+        .set { ch_samplesheet }
+
+    // Do QC and depletion of human reads using kneaddata from biobakery
+    KNEADDATA (
+        ch_samplesheet,
+        ch_host_genome
+    )
+
+    // Run QC on Pre-trimmed fastq files
+    KNEADDATA.out.fastqc_pre_r1
+        .mix( KNEADDATA.out.fastqc_pre_r2)
+	    .collect()
+        .set { ch_fasqc_pre }
+    MULTIQC (
+        ch_fasqc_pre,
+        [],[],[],[],[]
+    )
+
+    // Run QC on post-trimmed paired 
+    KNEADDATA.out.fastqc_post_paired_r1
+        .mix( KNEADDATA.out.fastqc_post_paired_r2)
+	    .collect()
+        .set { ch_fasqc_post_paired }
+    MULTIQC (
+        ch_fasqc_post_paired,
+        [],[],[],[],[]
+    )
+
+    // Run QC on post-trimmed post trimmed unmatched
+    KNEADDATA.out.fastqc_post_unmatched_r1
+        .mix( KNEADDATA.out.fastqc_post_unmatched_r2)
+	    .collect()
+        .set { ch_fasqc_post_unmatched }
+    MULTIQC (
+        ch_fasqc_post_unmatched,
+        [],[],[],[],[]
+    )
+
+
+
+
+
+/*
+    // Prepare samplesheet for fastp tool
     SAMPLESHEET_GENERATION.out.samplesheet
         .splitCsv(header:true)
         .map { row -> tuple( [id: row.id, single_end: false], tuple(file(row.r1), file(row.r2)), [] ) }
         .set { ch_samplesheet }
+
 
     // Filtering and trimming
     FASTP (
@@ -61,4 +116,6 @@ workflow {
         ch_fastp_qc_files,
         [],[],[],[],[]
    )
+*/
+
 }
