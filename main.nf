@@ -53,9 +53,12 @@ workflow {
     // Aggregate QC report
     FASTP.out.json.map{it[1]}
         .mix( FASTP.out.log.map{it[1]})
+	.collect()
         .set { ch_fastp_qc_files }
-    MULTIQC (
+
+    // Run multiqc
+     MULTIQC (
         ch_fastp_qc_files,
         [],[],[],[],[]
-    )
+   )
 }
