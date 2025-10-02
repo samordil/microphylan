@@ -5,6 +5,7 @@ nextflow.enable.dsl = 2
 // Import modules
 include { SAMPLESHEET_GENERATION    } from './modules/local/generate_samplesheet'
 include { FASTP                     } from './modules/nf-core/fastp/main'
+include { MULTIQC                   } from './modules/nf-core/multiqc/main' 
 
 
 workflow {
@@ -47,5 +48,14 @@ workflow {
         false,
         false,
         false
+    )
+
+    // Aggregate QC report
+    FASTP.out.json.map{it[1]}
+        .mix( FASTP.out.log.map{it[1]})
+        .set { ch_fastp_qc_files }
+    MULTIQC (
+        ch_fastp_qc_files,
+        [],[],[],[],[]
     )
 }
