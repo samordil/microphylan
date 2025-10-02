@@ -3,10 +3,12 @@
 nextflow.enable.dsl = 2
 
 // Import modules
-include { SAMPLESHEET_GENERATION    } from './modules/local/generate_samplesheet'
-include { KNEADDATA                 } from './modules/local/kneaddata' 
-include { FASTP                     } from './modules/nf-core/fastp/main'
-include { MULTIQC                   } from './modules/nf-core/multiqc/main'
+include { SAMPLESHEET_GENERATION                } from './modules/local/generate_samplesheet'
+include { KNEADDATA                             } from './modules/local/kneaddata' 
+include { FASTP                                 } from './modules/nf-core/fastp/main'
+include { MULTIQC  as MULTIQC_PRE               } from './modules/nf-core/multiqc/main'
+include { MULTIQC  as MULTIQC_POST_PAIRED       } from './modules/nf-core/multiqc/main'
+include { MULTIQC  as MULTIQC_POST_UNMATCHED    } from './modules/nf-core/multiqc/main'
 
 
 workflow {
@@ -28,7 +30,7 @@ workflow {
 
     // Define bowtie index human genome directory and make it a value channel
     channel
-        .value(file(params.human_genome), type: 'dir', maxDepth: 1)
+        .value(file(params.human_genome))
         .set { ch_host_genome }
 
     /*
@@ -60,7 +62,7 @@ workflow {
         .mix( KNEADDATA.out.fastqc_pre_r2)
 	    .collect()
         .set { ch_fasqc_pre }
-    MULTIQC (
+    MULTIQC_PRE (
         ch_fasqc_pre,
         [],[],[],[],[]
     )
@@ -70,7 +72,7 @@ workflow {
         .mix( KNEADDATA.out.fastqc_post_paired_r2)
 	    .collect()
         .set { ch_fasqc_post_paired }
-    MULTIQC (
+    MULTIQC_POST_PAIRED (
         ch_fasqc_post_paired,
         [],[],[],[],[]
     )
@@ -80,7 +82,7 @@ workflow {
         .mix( KNEADDATA.out.fastqc_post_unmatched_r2)
 	    .collect()
         .set { ch_fasqc_post_unmatched }
-    MULTIQC (
+    MULTIQC_POST_UNMATCHED (
         ch_fasqc_post_unmatched,
         [],[],[],[],[]
     )
