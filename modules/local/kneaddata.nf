@@ -31,7 +31,7 @@ process KNEADDATA {
             --input2 $read2 \\
             --reference-db $ref_db \\
             --sequencer-source TruSeq3 \\
-            --max-memory ${task.memory.toMega()}M \\
+            --max-memory ${task.memory.toMega()} \\
             --threads $task.cpus \\
             --output $sample_id \\
             --output-prefix $sample_id \\

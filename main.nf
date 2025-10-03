@@ -64,6 +64,7 @@ workflow {
         .set { ch_fasqc_pre }
     MULTIQC_PRE (
         ch_fasqc_pre,
+        'pre_qc',
         [],[],[],[],[]
     )
 
@@ -74,6 +75,7 @@ workflow {
         .set { ch_fasqc_post_paired }
     MULTIQC_POST_PAIRED (
         ch_fasqc_post_paired,
+        'post_paired_qc',
         [],[],[],[],[]
     )
 
@@ -83,7 +85,7 @@ workflow {
 	    .collect()
         .set { ch_fasqc_post_unmatched }
     MULTIQC_POST_UNMATCHED (
-        ch_fasqc_post_unmatched,
+        'post_unmatched_qc',
         [],[],[],[],[]
     )
 

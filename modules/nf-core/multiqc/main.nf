@@ -8,6 +8,7 @@ process MULTIQC {
 
     input:
     path  multiqc_files, stageAs: "?/*"
+    val filename
     path(multiqc_config)
     path(extra_multiqc_config)
     path(multiqc_logo)
@@ -15,7 +16,7 @@ process MULTIQC {
     path(sample_names)
 
     output:
-    path "*multiqc_report.html", emit: report
+    path "${filename}.html"    , emit: report
     path "*_data"              , emit: data
     path "*_plots"             , optional:true, emit: plots
     path "versions.yml"        , emit: versions
@@ -41,6 +42,7 @@ process MULTIQC {
         $logo \\
         $replace \\
         $samples \\
+        --filename ${filename}.html \\
         .
 
     cat <<-END_VERSIONS > versions.yml
