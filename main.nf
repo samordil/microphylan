@@ -85,6 +85,7 @@ workflow {
 	    .collect()
         .set { ch_fasqc_post_unmatched }
     MULTIQC_POST_UNMATCHED (
+        ch_fasqc_post_unmatched,
         'post_unmatched_qc',
         [],[],[],[],[]
     )
