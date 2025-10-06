@@ -9,6 +9,8 @@ include { FASTP                                 } from './modules/nf-core/fastp/
 include { MULTIQC  as MULTIQC_PRE               } from './modules/nf-core/multiqc/main'
 include { MULTIQC  as MULTIQC_POST_PAIRED       } from './modules/nf-core/multiqc/main'
 include { MULTIQC  as MULTIQC_POST_UNMATCHED    } from './modules/nf-core/multiqc/main'
+include { METAPHLAN                             } from './modules/local/metaphlan.nf'
+
 
 workflow {
 
@@ -31,6 +33,11 @@ workflow {
     channel
         .value(file(params.human_genome))
         .set { ch_host_genome }
+
+    // Define metaphlan4 db directory and make it a value channel
+    channel
+        .value(file(params.metaphlan_db))
+        .set { ch_metaphlan_db }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,6 +96,32 @@ workflow {
         [],[],[],[],[]
     )
 
+    // Combine all kneaddata FASTQ outputs by sample ID
+    // Combine all four KNEADDATA outputs into one channel per sample
+    KNEADDATA.out.paired_r1
+        .mix(
+            KNEADDATA.out.paired_r2,
+            KNEADDATA.out.unmatched_r1,
+            KNEADDATA.out.unmatched_r2
+        )
+        .groupTuple(by: 0)
+        .map { sample_id, files ->
+            // Convert to the format MetaPhlAn expects:
+            // meta: [id: sample_id], files: list of fastqs
+            tuple([id: sample_id], files.flatten().unique())
+        }
+        .set { ch_kneaddata_non_host_fastqs }
+
+
+    ch_kneaddata_non_host_fastqs.view()
+
+    METAPHLAN_METAPHLAN (
+        ch_kneaddata_non_host_fastqs,
+        ch_metaphlan_db,
+        false
+    )
+
+    METAPHLAN_METAPHLAN.out.profile_txt.view()
 /*
     // Prepare samplesheet for fastp tool
     SAMPLESHEET_GENERATION.out.samplesheet
