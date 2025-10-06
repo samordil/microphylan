@@ -55,7 +55,6 @@ process METAPHLAN {
         --db_dir \$BT2_DB \\
         --index \$BT2_DB_INDEX \\
         ${args} \\
-        --biom ${prefix}.biom \\
         --output_file ${prefix}_profile.txt
 
     cat <<-END_VERSIONS > versions.yml
