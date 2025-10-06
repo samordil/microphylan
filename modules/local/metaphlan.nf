@@ -14,10 +14,10 @@ process METAPHLAN {
     val save_samfile
 
     output:
-    tuple val(meta), path("*_profile.txt"), emit: profile_txt
-    tuple val(meta), path("*.biom"), emit: biom_table
-    tuple val(meta), path("*.mapout"), optional: true, emit: mapout
-    tuple val(meta), path("*.sam"), optional: true, emit: sam_file
+    tuple val(meta), path("*_profile.txt")      , emit: profile_txt
+    tuple val(meta), path("*.biom")             , optional: true    , emit: biom_table
+    tuple val(meta), path("*.mapout")           , optional: true    , emit: mapout
+    tuple val(meta), path("*.sam")              , optional: true    , emit: sam_file
     path "versions.yml", emit: versions
 
     when:
@@ -55,6 +55,7 @@ process METAPHLAN {
         --db_dir \$BT2_DB \\
         --index \$BT2_DB_INDEX \\
         ${args} \\
+        --biom_format_output ${prefix}.biom \\
         --output_file ${prefix}_profile.txt
 
     cat <<-END_VERSIONS > versions.yml
