@@ -24,18 +24,25 @@ process METAPHLAN {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def input_type = "${input}" =~ /.*\.(fastq|fq)/ ? "--input_type fastq" :
-                     "${input}" =~ /.*\.(fasta|fna|fa)/ ? "--input_type fasta" :
-                     "${input}".endsWith(".mapout") ? "--input_type mapout" : "--input_type sam"
+    def args         = task.ext.args ?: ''
+    def prefix       = task.ext.prefix ?: "${meta.id}"
 
-    // Collect inputs safely (single or multiple)
-    def input_data = (input instanceof List ? input : [input]).collect { it.toString() }.join(",")
+    // Detect input type
+    def input_type = (
+        "${input}" =~ /.*\.(fastq|fq)$/     ? "--input_type fastq"  :
+        "${input}" =~ /.*\.(fasta|fna|fa)$/ ? "--input_type fasta"  :
+        "${input}".endsWith(".mapout")      ? "--input_type mapout" :
+                                              "--input_type sam"
+    )
 
-    // Output options
-    def mapout_opt = (input_type in ["--input_type mapout", "--input_type sam"]) ? '' : "--mapout ${prefix}.mapout"
-    def samfile_out = save_samfile ? "-s ${prefix}.sam" : ''
+    // Handle one or multiple FASTQs
+    def input_data = (input instanceof List ? input : [input])
+                        .collect { it.toString() }
+                        .join(",")
+
+    // Output controls
+    def mapout_opt  = (input_type in ["--input_type mapout", "--input_type sam"]) ? '' : "--mapout ${prefix}.mapout"
+    def samfile_opt = save_samfile ? "-s ${prefix}.sam" : ''
 
     """
     BT2_DB=\$(find -L "${metaphlan_db_latest}" -name "*rev.1.bt2*" -exec dirname {} \\; | head -n1)
@@ -44,7 +51,7 @@ process METAPHLAN {
     metaphlan ${input_data} ${input_type} \\
         --nproc ${task.cpus} \\
         ${mapout_opt} \\
-        ${samfile_out} \\
+        ${samfile_opt} \\
         --db_dir \$BT2_DB \\
         --index \$BT2_DB_INDEX \\
         ${args} \\
