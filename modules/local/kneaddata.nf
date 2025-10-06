@@ -12,17 +12,17 @@ process KNEADDATA {
     path ref_db
 
     output:
-    tuple val($sample_id), path("${sample_id}/*_paired_1.fastq")                            , emit: paired_r1
-    tuple val($sample_id), path("${sample_id}/*_paired_2.fastq")                            , emit: paired_r2
-    tuple val($sample_id), path("${sample_id}/*_unmatched_1.fastq")                         , emit: unmatched_r1
-    tuple val($sample_id), path("${sample_id}/*_unmatched_2.fastq")                         , emit: unmatched_r2
-    tuple val($sample_id), path("${sample_id}/*.log")                                       , emit: kneaddata_log
-    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_1_fastqc.zip")            , emit: fastqc_pre_r1
-    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_2_fastqc.zip")            , emit: fastqc_pre_r2
-    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_paired_1_fastqc.zip")     , emit: fastqc_post_paired_r1
-    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_paired_2_fastqc.zip")     , emit: fastqc_post_paired_r2
-    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_unmatched_1_fastqc.zip")  , emit: fastqc_post_unmatched_r1
-    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_unmatched_2_fastqc.zip")  , emit: fastqc_post_unmatched_r2
+    tuple val(sample_id), path("${sample_id}/${sample_id}_paired_1.fastq")                  , emit: paired_r1
+    tuple val(sample_id), path("${sample_id}/${sample_id}_paired_2.fastq")                  , emit: paired_r2
+    tuple val(sample_id), path("${sample_id}/${sample_id}_unmatched_1.fastq")               , emit: unmatched_r1
+    tuple val(sample_id), path("${sample_id}/${sample_id}_unmatched_2.fastq")               , emit: unmatched_r2
+    tuple val(sample_id), path("${sample_id}/${sample_id}.log")                             , emit: kneaddata_log
+    tuple val(sample_id), path("${sample_id}/fastqc/${sample_id}_1_fastqc.zip")             , emit: fastqc_pre_r1
+    tuple val(sample_id), path("${sample_id}/fastqc/${sample_id}_2_fastqc.zip")             , emit: fastqc_pre_r2
+    tuple val(sample_id), path("${sample_id}/fastqc/${sample_id}_paired_1_fastqc.zip")      , emit: fastqc_post_paired_r1
+    tuple val(sample_id), path("${sample_id}/fastqc/${sample_id}_paired_2_fastqc.zip")      , emit: fastqc_post_paired_r2
+    tuple val(sample_id), path("${sample_id}/fastqc/${sample_id}_unmatched_1_fastqc.zip")   , emit: fastqc_post_unmatched_r1
+    tuple val(sample_id), path("${sample_id}/fastqc/${sample_id}_unmatched_2_fastqc.zip")   , emit: fastqc_post_unmatched_r2
     path "versions.yml"                                                                     , emit: versions
 
     script:
