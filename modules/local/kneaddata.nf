@@ -1,6 +1,7 @@
 process KNEADDATA {
     tag "$sample_id"
     label 'process_medium'
+    label 'error_ignore'
 
     container "${workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer' ? 
     'oras://community.wave.seqera.io/library/kneaddata:0.12.3--720d316ad753dc36' : 
@@ -11,18 +12,18 @@ process KNEADDATA {
     path ref_db
 
     output:
-    path "${sample_id}/*_paired_1.fastq"                    , emit: paired_r1
-    path "${sample_id}/*_paired_2.fastq"                    , emit: paired_r2
-    path "${sample_id}/*_unmatched_1.fastq"                 , emit: unmatched_r1
-    path "${sample_id}/*_unmatched_2.fastq"                 , emit: unmatched_r2
-    path "${sample_id}/*.log"                               , emit: kneaddata_log
-    path "${sample_id}/fastqc/*_1_fastqc.zip"               , emit: fastqc_pre_r1
-    path "${sample_id}/fastqc/*_2_fastqc.zip"               , emit: fastqc_pre_r2
-    path "${sample_id}/fastqc/*_paired_1_fastqc.zip"        , emit: fastqc_post_paired_r1
-    path "${sample_id}/fastqc/*_paired_2_fastqc.zip"        , emit: fastqc_post_paired_r2
-    path "${sample_id}/fastqc/*_unmatched_1_fastqc.zip"     , emit: fastqc_post_unmatched_r1
-    path "${sample_id}/fastqc/*_unmatched_2_fastqc.zip"     , emit: fastqc_post_unmatched_r2
-    path "versions.yml"                                     , emit: versions
+    tuple val($sample_id), path("${sample_id}/*_paired_1.fastq")                            , emit: paired_r1
+    tuple val($sample_id), path("${sample_id}/*_paired_2.fastq")                            , emit: paired_r2
+    tuple val($sample_id), path("${sample_id}/*_unmatched_1.fastq")                         , emit: unmatched_r1
+    tuple val($sample_id), path("${sample_id}/*_unmatched_2.fastq")                         , emit: unmatched_r2
+    tuple val($sample_id), path("${sample_id}/*.log")                                       , emit: kneaddata_log
+    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_1_fastqc.zip")            , emit: fastqc_pre_r1
+    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_2_fastqc.zip")            , emit: fastqc_pre_r2
+    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_paired_1_fastqc.zip")     , emit: fastqc_post_paired_r1
+    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_paired_2_fastqc.zip")     , emit: fastqc_post_paired_r2
+    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_unmatched_1_fastqc.zip")  , emit: fastqc_post_unmatched_r1
+    tuple val($sample_id), path("${sample_id}/fastqc/${sample_id}_unmatched_2_fastqc.zip")  , emit: fastqc_post_unmatched_r2
+    path "versions.yml"                                                                     , emit: versions
 
     script:
         """
