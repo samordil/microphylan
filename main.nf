@@ -115,13 +115,13 @@ workflow {
 
     ch_kneaddata_non_host_fastqs.view()
 
-    METAPHLAN_METAPHLAN (
+    METAPHLAN (
         ch_kneaddata_non_host_fastqs,
         ch_metaphlan_db,
         false
     )
 
-    METAPHLAN_METAPHLAN.out.profile_txt.view()
+    METAPHLAN.out.profile_txt.view()
 /*
     // Prepare samplesheet for fastp tool
     SAMPLESHEET_GENERATION.out.samplesheet
