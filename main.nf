@@ -112,16 +112,26 @@ workflow {
         }
         .set { ch_kneaddata_non_host_fastqs }
 
-
-    ch_kneaddata_non_host_fastqs.view()
-
     METAPHLAN (
         ch_kneaddata_non_host_fastqs,
         ch_metaphlan_db,
         false
     )
 
-    METAPHLAN.out.profile_txt.view()
+    // merge metaphlan tables
+    METAPHLAN.out.profile_txt
+        .collect()
+        .map { tuples ->
+        def files = tuples.collect { it[1] }  // extract file paths
+        tuple([id: 'metaphlan_merged_file'], files)
+        }
+        .set { ch_all_metaphlan_txts }
+        ch_all_metaphlan_txt.view()
+    METAPHLAN_MERGEMETAPHLANTABLES (
+        ch_all_metaphlan_txt
+    )
+
+    METAPHLAN_MERGEMETAPHLANTABLES.out.txt.view()
 /*
     // Prepare samplesheet for fastp tool
     SAMPLESHEET_GENERATION.out.samplesheet
