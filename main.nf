@@ -120,11 +120,7 @@ workflow {
 
     // merge metaphlan tables
     METAPHLAN.out.profile_txt
-        .collect()
-        .map { tuples ->
-        def files = tuples.collect { it[1] }  // extract file paths
-        tuple([id: 'metaphlan_merged_file'], files)
-        }
+        .map {it[1]}.collect()
         .set { ch_all_metaphlan_txt }
 
         ch_all_metaphlan_txt.view()
