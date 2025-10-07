@@ -125,8 +125,10 @@ workflow {
         def files = tuples.collect { it[1] }  // extract file paths
         tuple([id: 'metaphlan_merged_file'], files)
         }
-        .set { ch_all_metaphlan_txts }
+        .set { ch_all_metaphlan_txt }
+
         ch_all_metaphlan_txt.view()
+
     METAPHLAN_MERGEMETAPHLANTABLES (
         ch_all_metaphlan_txt
     )
