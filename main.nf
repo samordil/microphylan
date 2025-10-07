@@ -10,7 +10,7 @@ include { MULTIQC  as MULTIQC_PRE               } from './modules/nf-core/multiq
 include { MULTIQC  as MULTIQC_POST_PAIRED       } from './modules/nf-core/multiqc/main'
 include { MULTIQC  as MULTIQC_POST_UNMATCHED    } from './modules/nf-core/multiqc/main'
 include { METAPHLAN                             } from './modules/local/metaphlan.nf'
-
+include { METAPHLAN_MERGEMETAPHLANTABLES        } from './modules/local/merge_metaphlan.nf'
 
 workflow {
 
