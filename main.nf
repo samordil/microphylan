@@ -123,13 +123,10 @@ workflow {
         .map {it[1]}.collect()
         .set { ch_all_metaphlan_txt }
 
-        ch_all_metaphlan_txt.view()
-
     METAPHLAN_MERGEMETAPHLANTABLES (
         ch_all_metaphlan_txt
     )
 
-    METAPHLAN_MERGEMETAPHLANTABLES.out.txt.view()
 /*
     // Prepare samplesheet for fastp tool
     SAMPLESHEET_GENERATION.out.samplesheet
