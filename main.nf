@@ -11,6 +11,8 @@ include { MULTIQC  as MULTIQC_POST_PAIRED       } from './modules/nf-core/multiq
 include { MULTIQC  as MULTIQC_POST_UNMATCHED    } from './modules/nf-core/multiqc/main'
 include { METAPHLAN                             } from './modules/local/metaphlan.nf'
 include { METAPHLAN_MERGEMETAPHLANTABLES        } from './modules/local/merge_metaphlan.nf'
+include { KNEADDATA_LOG_SUMMARIZER		} from './modules/local/kneaddata_summarizer.nf'
+
 
 workflow {
 
@@ -95,6 +97,16 @@ workflow {
         'post_post_unmatched',
         [],[],[],[],[]
     )
+
+    // Aggregate kneaddata logs into a csv file
+    KNEADDATA.out.kneaddata_log
+	.map {sample_id, log_file -> 
+		log_file
+	}
+	.collect()
+	.set { ch_kneaddata_logs }
+   
+    KNEADDATA_LOG_SUMMARIZER ( ch_kneaddata_logs )
 
     // Combine all kneaddata FASTQ outputs by sample ID
     // Combine all four KNEADDATA outputs into one channel per sample
