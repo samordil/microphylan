@@ -15,6 +15,7 @@ process METAPHLAN {
 
     output:
     tuple val(meta), path("*_profile.txt")      , emit: profile_txt
+    tuple val(meta), path("*_vsc.txt")          , emit: vsc_txt
     tuple val(meta), path("*.biom")             , optional: true    , emit: biom_table
     tuple val(meta), path("*.mapout")           , optional: true    , emit: mapout
     tuple val(meta), path("*.sam")              , optional: true    , emit: sam_file
@@ -55,6 +56,8 @@ process METAPHLAN {
         --db_dir \$BT2_DB \\
         --index \$BT2_DB_INDEX \\
         ${args} \\
+        --profile_vsc \\
+        --vsc_out ${prefix}_vsc.txt \\
         --output_file ${prefix}_profile.txt
 
     cat <<-END_VERSIONS > versions.yml

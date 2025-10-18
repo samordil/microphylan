@@ -127,7 +127,7 @@ workflow {
     METAPHLAN (
         ch_kneaddata_non_host_fastqs,
         ch_metaphlan_db,
-        false
+        true
     )
 
     // merge metaphlan tables
