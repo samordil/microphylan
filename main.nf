@@ -10,6 +10,7 @@ include { MULTIQC  as MULTIQC_PRE               } from './modules/nf-core/multiq
 include { MULTIQC  as MULTIQC_POST_PAIRED       } from './modules/nf-core/multiqc/main'
 include { MULTIQC  as MULTIQC_POST_UNMATCHED    } from './modules/nf-core/multiqc/main'
 include { METAPHLAN                             } from './modules/local/metaphlan.nf'
+include { METAPHLAN3                            } from './modules/local/metaphlan3.nf'
 include { METAPHLAN_MERGEMETAPHLANTABLES        } from './modules/local/merge_metaphlan.nf'
 include { KNEADDATA_LOG_SUMMARIZER		} from './modules/local/kneaddata_summarizer.nf'
 
@@ -124,14 +125,25 @@ workflow {
         }
         .set { ch_kneaddata_non_host_fastqs }
 
-    METAPHLAN (
+   // METAPHLAN (
+   //     ch_kneaddata_non_host_fastqs,
+   //     ch_metaphlan_db,
+   //     true
+   // )
+    
+    METAPHLAN3 (
         ch_kneaddata_non_host_fastqs,
-        ch_metaphlan_db,
-        true
+        ch_metaphlan_db
     )
 
+
     // merge metaphlan tables
-    METAPHLAN.out.profile_txt
+    //METAPHLAN.out.profile_txt
+    //    .map {it[1]}.collect()
+    //    .set { ch_all_metaphlan_txt }
+
+    // merge metaphlan tables
+    METAPHLAN3.out.profile
         .map {it[1]}.collect()
         .set { ch_all_metaphlan_txt }
 
